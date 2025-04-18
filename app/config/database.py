@@ -6,9 +6,9 @@ DATABASE_URL = "mysql+aiomysql://root:12345@localhost/sakila"
 # Tạo engine bất đồng bộ
 engine = create_async_engine(
     DATABASE_URL,
-    pool_size=100,         # Tăng lên 100
-    max_overflow=50,       # Tăng lên 50, tổng 150 kết nối
-    pool_timeout=5.0,      # Tăng lên 5 giây để giảm timeout
+    pool_size=300,        
+    max_overflow=200,       
+    pool_timeout=30.0,     
     pool_recycle=1800,
     pool_pre_ping=True
 )

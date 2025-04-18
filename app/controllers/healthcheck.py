@@ -9,12 +9,9 @@ router = APIRouter()
 @router.get("/healthcheck")
 async def healthcheck(db: AsyncSession = Depends(get_async_db)):
     try:
-        
-        await asyncio.sleep(1)
-        
         # Kiểm tra kết nối DB
         await db.execute(text("SELECT 1"))
-        
+        await asyncio.sleep(1)
         return {
             "status": "ok",
             "db_checked": True,

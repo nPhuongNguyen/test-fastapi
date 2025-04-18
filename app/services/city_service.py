@@ -9,8 +9,12 @@ class CityService:
         self.city_repo = CityRepository(db)
 
     async def get_cities(self) -> list[CityResponse]:  
-        cities = await self.city_repo.get_all()  # Đảm bảo phương thức trong repository là async
-        return [CityResponse.model_validate(city) for city in cities]
+        try:
+            cities = await self.city_repo.get_all()
+            return [CityResponse.model_validate(city) for city in cities]
+        except Exception as e:
+        # Log lỗi hoặc raise custom exception tùy theo yêu cầu
+            raise Exception(f"Failed to fetch or validate cities: {str(e)}")
 
     async def get_city_by_id(self, city_id: int) -> CityResponse:  
         city = await self.city_repo.get_by_id(city_id)  # Đảm bảo phương thức trong repository là async
