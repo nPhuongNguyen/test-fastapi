@@ -12,6 +12,9 @@ class CityRepository:
         return result.scalars().all()
 
     async def get_by_id(self, city_id: int):
-        # Thực thi truy vấn với filter để lấy thành phố theo ID
-        result = await self.db.execute(select(City).filter(City.city_id == city_id))
-        return result.scalar_one_or_none()
+        try:
+            result = await self.db.execute(select(City).filter(City.city_id == city_id))
+            return result.scalar_one_or_none()
+        except Exception as e:
+            print(f"Error in get_by_id: {e}")
+            raise

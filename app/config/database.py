@@ -4,13 +4,22 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 DATABASE_URL = "mysql+aiomysql://root:12345@localhost/sakila"
 
 # Tạo engine bất đồng bộ
-engine = create_async_engine(DATABASE_URL, pool_recycle=3600, echo=False)
+engine = create_async_engine(
+    DATABASE_URL,
+    pool_size=100,         # Tăng lên 100
+    max_overflow=50,       # Tăng lên 50, tổng 150 kết nối
+    pool_timeout=5.0,      # Tăng lên 5 giây để giảm timeout
+    pool_recycle=1800,
+    pool_pre_ping=True
+)
 
 # Tạo async session
 async_session = sessionmaker(
-    bind=engine, 
+    bind=engine,
     class_=AsyncSession,
-    expire_on_commit=False
+    expire_on_commit=False,
+    autoflush=False,  # Tắt autoflush để tăng performance
+    future=True       # Bật tính năng tương lai của SQLAlchemy 2.0
 )
 
 # Base dùng như bình thường
@@ -18,5 +27,8 @@ Base = declarative_base()
 
 # Hàm lấy session async
 async def get_async_db():
-    async with async_session() as session:
+    session = async_session()
+    try:
         yield session
+    finally:
+        await session.close()  # Quan trọng: luôn đảm bảo session được đóng
